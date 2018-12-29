@@ -10,7 +10,7 @@ class Adapter<T>(private val context: Context?, private val data: List<T>, priva
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view = convertView ?: LayoutInflater.from(context).inflate(layoutId, parent, false)
-        bindView(view, data[position]!!, position)
+        bindView(view, data[position], position)
         return view
     }
 
