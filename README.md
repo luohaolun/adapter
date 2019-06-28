@@ -15,7 +15,7 @@
 > Module build.gradle
 
 	dependencies {
-	        implementation 'com.github.luohaolun:adapter:1.2'
+	        implementation 'com.github.luohaolun:adapter:1.3'
 	}
 
 
@@ -49,7 +49,7 @@
 	
 	lvList.adapter = MultiAdapter(this, data, SparseArray<Int>().apply { put(0, R.layout.item_test);put(1, R.layout.item_test_2) }) { view, item, type, position ->
 	
-	when (type) {
+	    when (type) {
 		0 -> {
                     view.tvNum.text = "$item  类型0"
                     view.btn.setOnClickListener { Toast.makeText(this, "点击$position   类型0", Toast.LENGTH_SHORT).show() }
