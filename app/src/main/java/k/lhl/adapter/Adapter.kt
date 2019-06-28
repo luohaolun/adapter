@@ -9,7 +9,7 @@ import android.widget.BaseAdapter
 class Adapter<T>(private val context: Context?, private val data: List<T>, private val layoutId: Int, private val bindView: (View, T, Int) -> Unit) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var view = convertView ?: LayoutInflater.from(context).inflate(layoutId, parent, false)
+        val view = convertView ?: LayoutInflater.from(context).inflate(layoutId, parent, false)
         bindView(view, data[position], position)
         return view
     }
