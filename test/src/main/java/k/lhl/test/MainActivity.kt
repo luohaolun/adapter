@@ -19,9 +19,9 @@ class MainActivity : AppCompatActivity() {
 //            data.add(i.toString())
 //        }
 //
-//        lvList.adapter = Adapter(this, data, R.layout.item_test) { v, item, position ->
-//            v.tvNum.text = item
-//            v.btn.setOnClickListener { Toast.makeText(this, "点击" + position, Toast.LENGTH_SHORT).show() }
+//        lvList.adapter = Adapter(data, R.layout.item_test) { item, position ->
+//            tvNum.text = item
+//            btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
 //        }
 
         val data = mutableListOf<Pair<Int, String>>()
@@ -33,15 +33,15 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        lvList.adapter = MultiAdapter(this, data, SparseArray<Int>().apply { put(0, R.layout.item_test);put(1, R.layout.item_test_2) }) { view, item, type, position ->
+        lvList.adapter = MultiAdapter(data, SparseArray<Int>().apply { put(0, R.layout.item_test);put(1, R.layout.item_test_2) }) { type, item, position ->
             when (type) {
                 0 -> {
-                    view.tvNum.text = "$item  类型0"
-                    view.btn.setOnClickListener { Toast.makeText(this, "点击$position   类型0", Toast.LENGTH_SHORT).show() }
+                    tvNum.text = "$item  类型0"
+                    btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击$position   类型0", Toast.LENGTH_SHORT).show() }
                 }
                 1 -> {
-                    view.tvNum.text = "$item  类型1"
-                    view.btn.setOnClickListener { Toast.makeText(this, "点击$position   类型1", Toast.LENGTH_SHORT).show() }
+                    tvNum.text = "$item  类型1"
+                    btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击$position   类型1", Toast.LENGTH_SHORT).show() }
                 }
             }
         }
