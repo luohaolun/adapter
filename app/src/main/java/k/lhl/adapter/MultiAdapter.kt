@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.blankj.utilcode.util.Utils
-
+/**
+ * Created by luohaolun.
+ * Date: 2019/1/22
+ */
 class MultiAdapter<T>(private val data: List<Pair<Int, T>>, private val layoutId: SparseArray<Int>, private val bindView: View.(Int, T, Int) -> Unit) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
