@@ -20,7 +20,7 @@
 > Module build.gradle
 
 	dependencies {
-	        implementation 'com.github.luohaolun:adapter:1.4'
+	        implementation 'com.github.luohaolun:adapter:1.7'
 	}
 
 
@@ -32,7 +32,7 @@
 	for (i in 0..10) {
 		data.add(i.toString())
 	}
-	
+
         lvList.adapter = Adapter(data, R.layout.item_test) {
             tvNum.text = it
         }
