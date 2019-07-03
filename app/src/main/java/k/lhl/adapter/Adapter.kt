@@ -1,5 +1,6 @@
 package k.lhl.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,12 @@ import com.blankj.utilcode.util.Utils
  * Created by luohaolun.
  * Date: 2019/1/22
  */
-class Adapter<T>(private val data: List<T>, private val layoutId: Int, private val bindView: View.() -> Unit) : BaseAdapter() {
+class Adapter<T>(private val data: List<T>, private val layoutId: Int, private val bindView: View.(T) -> Unit) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = convertView ?: LayoutInflater.from(Utils.getApp()).inflate(layoutId, parent, false)
-        view.setTag(position)
-        return view.apply { bindView(data[position], position) }
+        view.setTag(R.id.adapterPosition, position)
+        return view.apply { bindView(data[position]) }
     }
 
     override fun getItem(position: Int): T = data[position]
@@ -23,8 +24,8 @@ class Adapter<T>(private val data: List<T>, private val layoutId: Int, private v
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun getCount(): Int = data.size
-
-    val View.item: T
-        get() = getTag() as T
 }
+
+
+
 

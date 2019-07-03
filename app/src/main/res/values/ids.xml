@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="adapterItem" type="id"></item>
+    <item name="adapterPosition" type="id"></item>
+    <item name="adapterType" type="id"></item>
+</resources>
