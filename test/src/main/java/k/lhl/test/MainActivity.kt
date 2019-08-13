@@ -15,20 +15,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val data = mutableListOf<String>()
-//        for (i in 10..30) {
-//            data.add(i.toString())
-//        }
-//
-//        recyList.layoutManager = LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL }
-//        recyList.adapter = RecyclerAdapter(data, R.layout.item_test) {
-//            tvNum.text = it
-//            btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
-//        }.setOnItemClickListener {
-//            Toast.makeText(this@MainActivity, "点击    $position    $it", Toast.LENGTH_SHORT).show()
-//        }.setOnItemLongClickListener {
-//            Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
-//        }
+        val data = mutableListOf<String>()
+        for (i in 10..30) {
+            data.add(i.toString())
+        }
+
+        recyList.layoutManager = LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL }
+        recyList.adapter = RecyclerAdapter(data, R.layout.item_test) {
+            tvNum.text = it
+            btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
+        }.setOnItemClickListener(500) {
+            Toast.makeText(this@MainActivity, "点击    $position    $it", Toast.LENGTH_SHORT).show()
+        }.setOnItemLongClickListener {
+            Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
+        }
 
 //
 //
@@ -37,31 +37,31 @@ class MainActivity : AppCompatActivity() {
 //            btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
 //        }
 
-        val data = mutableListOf<Pair<Int, String>>()
-        for (i in 10..30) {
-            if (i < 14 || i > 28)
-                data.add(Pair(0, i.toString()))
-            else
-                data.add(Pair(1, i.toString()))
-        }
-
-        recyList.layoutManager = LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL }
-        recyList.adapter = MultiRecyclerAdapter(data, SparseArray<Int>().apply { put(0, R.layout.item_test);put(1, R.layout.item_test_2) }) {
-            when (type) {
-                0 -> {
-                    tvNum.text = it
-                    btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击类型1     $position", Toast.LENGTH_SHORT).show() }
-                }
-                1 -> {
-                    tvNum.text = it
-                    btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击类型2      $position", Toast.LENGTH_SHORT).show() }
-                }
-            }
-        }.setOnItemClickListener {
-            Toast.makeText(this@MainActivity, "点击    $position     $it", Toast.LENGTH_SHORT).show()
-        }.setOnItemLongClickListener {
-            Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
-        }
+//        val data = mutableListOf<Pair<Int, String>>()
+//        for (i in 10..30) {
+//            if (i < 14 || i > 28)
+//                data.add(Pair(0, i.toString()))
+//            else
+//                data.add(Pair(1, i.toString()))
+//        }
+//
+//        recyList.layoutManager = LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL }
+//        recyList.adapter = MultiRecyclerAdapter(data, SparseArray<Int>().apply { put(0, R.layout.item_test);put(1, R.layout.item_test_2) }) {
+//            when (type) {
+//                0 -> {
+//                    tvNum.text = it
+//                    btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击类型1     $position", Toast.LENGTH_SHORT).show() }
+//                }
+//                1 -> {
+//                    tvNum.text = it
+//                    btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击类型2      $position", Toast.LENGTH_SHORT).show() }
+//                }
+//            }
+//        }.setOnItemClickListener {
+//            Toast.makeText(this@MainActivity, "点击    $position     $it", Toast.LENGTH_SHORT).show()
+//        }.setOnItemLongClickListener {
+//            Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
+//        }
 
 //        recyList.adapter = MulRecyclerAdapter(data, 0, R.layout.item_test) {
 //            tvNum.text = it

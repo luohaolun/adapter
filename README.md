@@ -88,7 +88,7 @@
 
         recyList.adapter = RecyclerAdapter(data, R.layout.item_test) {
             tvNum.text = it
-        }.setOnItemClickListener {
+        }.setOnItemClickListener(500) { //点击间隔 500ms
             Toast.makeText(this@MainActivity, "点击    $position    $it", Toast.LENGTH_SHORT).show()
         }.setOnItemLongClickListener {
             Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()

@@ -1,11 +1,10 @@
 package k.lhl.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.blankj.utilcode.util.Utils
+import com.blankj.utilcode.util.ActivityUtils
 
 /**
  * Created by luohaolun.
@@ -14,7 +13,7 @@ import com.blankj.utilcode.util.Utils
 class Adapter<T>(private val data: List<T>, private val layoutId: Int, private val bindView: View.(T) -> Unit) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(Utils.getApp()).inflate(layoutId, parent, false)
+        val view = convertView ?: LayoutInflater.from(ActivityUtils.getTopActivity()).inflate(layoutId, parent, false)
         view.setTag(R.id.adapterPosition, position)
         return view.apply { bindView(data[position]) }
     }

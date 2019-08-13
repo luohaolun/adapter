@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.blankj.utilcode.util.Utils
+import com.blankj.utilcode.util.ActivityUtils
 import lhl.kotlinextends.click
 import lhl.kotlinextends.longClick
 
@@ -17,19 +17,21 @@ class RecyclerAdapter<T>(private val data: List<T>, private val layoutId: Int, p
 
     private var clickListener: (View.(T) -> Unit)? = null
     private var longClickListener: (View.(T) -> Unit)? = null
+    private var clickIntervalTime = 10
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         holder.itemView.setTag(R.id.adapterPosition, position)
         holder.itemView.run { bindView(data[position]) }
-        clickListener?.let { listener -> holder.itemView.click { listener.invoke(it!!, data[position]) } }
+        clickListener?.let { listener -> holder.itemView.click(clickIntervalTime) { listener.invoke(it!!, data[position]) } }
         longClickListener?.let { listener -> holder.itemView.longClick { listener.invoke(it!!, data[position]);true } }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(LayoutInflater.from(Utils.getApp()).inflate(layoutId, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(LayoutInflater.from(ActivityUtils.getTopActivity()).inflate(layoutId, parent, false))
 
     override fun getItemCount(): Int = data.size
 
-    fun setOnItemClickListener(listener: View.(T) -> Unit): RecyclerAdapter<T> {
+    fun setOnItemClickListener(interval: Int = 10, listener: View.(T) -> Unit): RecyclerAdapter<T> {
+        this.clickIntervalTime = interval
         this.clickListener = listener
         return this
     }

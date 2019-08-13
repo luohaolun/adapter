@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.blankj.utilcode.util.Utils
+import com.blankj.utilcode.util.ActivityUtils
 
 /**
  * Author： luohaolun
@@ -26,7 +26,7 @@ class MulAdapter<T>(private val data: List<Pair<Int, T>>, type: Int, layoutId: I
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val pair = itemTypeList[getItemViewType(position)] ?: error("缺少类型布局 type = ${getItemViewType(position)} , position = $position")
-        val view = convertView ?: LayoutInflater.from(Utils.getApp()).inflate(pair.first, parent, false)
+        val view = convertView ?: LayoutInflater.from(ActivityUtils.getTopActivity()).inflate(pair.first, parent, false)
         view.setTag(R.id.adapterPosition, position)
         view.setTag(R.id.adapterType, getItemViewType(position))
         pair.second(view, getItem(position))

@@ -5,8 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.TextView
-import com.blankj.utilcode.util.Utils
+import com.blankj.utilcode.util.ActivityUtils
 
 /**
  * Created by luohaolun.
@@ -16,7 +15,7 @@ class MultiAdapter<T>(private val data: List<Pair<Int, T>>, private val layoutId
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val layoutId = layoutIds[getItemViewType(position)] ?: error("缺少类型布局 type = ${getItemViewType(position)} , position = $position")
-        val view = convertView ?: LayoutInflater.from(Utils.getApp()).inflate(layoutId, parent, false)
+        val view = convertView ?: LayoutInflater.from(ActivityUtils.getTopActivity()).inflate(layoutId, parent, false)
         view.setTag(R.id.adapterPosition, position)
         view.setTag(R.id.adapterType, getItemViewType(position))
         return view.apply { bindView(getItem(position)) }
