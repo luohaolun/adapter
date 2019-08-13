@@ -20,7 +20,7 @@
 > Module build.gradle
 
 	dependencies {
-	        implementation 'com.github.luohaolun:adapter:1.4'
+	        implementation 'com.github.luohaolun:adapter:1.8'
 	}
 
 
