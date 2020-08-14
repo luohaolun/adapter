@@ -1,9 +1,9 @@
 package k.lhl.adapter
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ActivityUtils
 import lhl.kotlinextends.click
 import lhl.kotlinextends.longClick

@@ -1,11 +1,13 @@
 package k.lhl.test
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.util.SparseArray
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import k.lhl.adapter.*
+import k.lhl.recyclerview.PullBaseView
+import k.lhl.recyclerview.TicketFooterView
+import k.lhl.recyclerview.TicketHeaderView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_test.view.*
 
@@ -20,15 +22,31 @@ class MainActivity : AppCompatActivity() {
             data.add(i.toString())
         }
 
-        recyList.layoutManager = LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL }
-        recyList.adapter = RecyclerAdapter(data, R.layout.item_test) {
+        recyList.setFooterView(MyHeaderView::class.java)
+
+        recyList.setAdapter(RecyclerAdapter(data, R.layout.item_test) {
             tvNum.text = it
             btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
         }.setOnItemClickListener(500) {
             Toast.makeText(this@MainActivity, "点击    $position    $it", Toast.LENGTH_SHORT).show()
         }.setOnItemLongClickListener {
             Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
-        }
+        })
+        recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
+
+        recyList.setOnRefreshListener(object : PullBaseView.OnRefreshListener {
+            override fun onPullToRefresh(view: PullBaseView<*>?) {
+                recyList.postDelayed({
+                    recyList.onHeaderRefreshComplete()
+                }, 3000)
+            }
+
+            override fun onPullToLoadMore(view: PullBaseView<*>?) {
+                recyList.postDelayed({
+                    recyList.onFooterRefreshComplete()
+                }, 3000)
+            }
+        })
 
 //
 //

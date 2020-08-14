@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:duration="100">
+        <clip
+            android:clipOrientation="horizontal"
+            android:drawable="@mipmap/loading_frame1"
+            android:gravity="center"></clip>
+    </item>
+    <item android:duration="100">
+        <clip
+            android:clipOrientation="horizontal"
+            android:drawable="@mipmap/loading_frame2"
+            android:gravity="center"></clip>
+    </item>
+</animation-list>

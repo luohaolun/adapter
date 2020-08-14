@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PullBaseView">
+        <attr name="enableHeader" format="boolean" />
+        <attr name="enableFooter" format="boolean" />
+        <attr name="headerClass" format="string" />
+        <attr name="footerClass" format="string" />
+    </declare-styleable>
+</resources>
