@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             data.add(i.toString())
         }
 
-        recyList.setFooterView(MyHeaderView::class.java)
+//        recyList.setHeader(MyHeaderView::class.java)
 
         recyList.setAdapter(RecyclerAdapter(data, R.layout.item_test) {
             tvNum.text = it
@@ -34,19 +34,17 @@ class MainActivity : AppCompatActivity() {
         })
         recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
 
-        recyList.setOnRefreshListener(object : PullBaseView.OnRefreshListener {
-            override fun onPullToRefresh(view: PullBaseView<*>?) {
-                recyList.postDelayed({
-                    recyList.onHeaderRefreshComplete()
-                }, 3000)
-            }
-
-            override fun onPullToLoadMore(view: PullBaseView<*>?) {
-                recyList.postDelayed({
-                    recyList.onFooterRefreshComplete()
-                }, 3000)
-            }
-        })
+//        recyList.setOnRefreshListener {
+//            recyList.postDelayed({
+//                recyList.onHeaderRefreshComplete()
+//            }, 3000)
+//        }
+//
+//        recyList.setOnLoadListener {
+//            recyList.postDelayed({
+//                recyList.onFooterRefreshComplete()
+//            }, 3000)
+//        }
 
 //
 //

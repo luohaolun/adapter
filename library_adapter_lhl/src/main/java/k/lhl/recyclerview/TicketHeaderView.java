@@ -39,13 +39,13 @@ public class TicketHeaderView extends BaseHeaderOrFooterView {
      * 释放刷新的提示
      */
     @Override
-    public void releaseToRefreshOrLoad() {
+    public void onPreRelease() {
 //        text.setText("释放刷新数据");
         progressBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void pullToRefreshOrLoad() {
+    public void onPreLoading() {
 //        text.setText("下拉刷新数据");
         progressBar.setVisibility(View.GONE);
     }
@@ -54,7 +54,7 @@ public class TicketHeaderView extends BaseHeaderOrFooterView {
      * 正在刷新
      */
     @Override
-    public void isRefreshingOrLoading() {
+    public void onLoading() {
 //        text.setText("正在刷新...");
         image.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
@@ -64,14 +64,15 @@ public class TicketHeaderView extends BaseHeaderOrFooterView {
      * 刷新完成的回调
      */
     @Override
-    public void refreshOrLoadComplete() {
+    public void onComplete(boolean over) {
 //        text.setText("下拉刷新数据");
         progressBar.setVisibility(View.GONE);
         image.setVisibility(View.VISIBLE);
     }
 
+
     @Override
-    public void getPercentage(float rate) {
+    public void onPercentage(float rate) {
         //这里设置的是根据下拉头显示的百分比进行一个头部图片动态缩放的效果
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) image.getLayoutParams();
         double den = getContext().getResources().getDisplayMetrics().density;

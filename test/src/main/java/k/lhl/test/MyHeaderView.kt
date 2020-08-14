@@ -11,10 +11,10 @@ import k.lhl.recyclerview.BaseHeaderOrFooterView
  * Date  :  2020/8/14
  */
 class MyHeaderView(context: Context, parent: ViewGroup) : BaseHeaderOrFooterView(context, parent, HEADER) {
-    override fun isRefreshingOrLoading() {
+    override fun onLoading() {
     }
 
-    override fun releaseToRefreshOrLoad() {
+    override fun onPreRelease() {
     }
 
     override fun onViewCreated(view: View?) {
@@ -24,12 +24,12 @@ class MyHeaderView(context: Context, parent: ViewGroup) : BaseHeaderOrFooterView
         return R.layout.header
     }
 
-    override fun refreshOrLoadComplete() {
+    override fun onComplete(over: Boolean) {
     }
 
-    override fun getPercentage(rate: Float) {
+    override fun onPercentage(rate: Float) {
     }
 
-    override fun pullToRefreshOrLoad() {
+    override fun onPreLoading() {
     }
 }

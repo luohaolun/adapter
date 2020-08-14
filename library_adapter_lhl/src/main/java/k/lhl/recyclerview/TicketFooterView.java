@@ -32,30 +32,30 @@ public class TicketFooterView extends BaseHeaderOrFooterView {
     }
 
     @Override
-    public void releaseToRefreshOrLoad() {
+    public void onPreRelease() {
         mFooterTextView.setText("松开加载更多");
     }
 
     @Override
-    public void pullToRefreshOrLoad() {
+    public void onPreLoading() {
         mFooterTextView.setText("上拉加载更多");
     }
 
     @Override
-    public void isRefreshingOrLoading() {
+    public void onLoading() {
         mFooterTextView.setVisibility(View.GONE);
         mFooterProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void refreshOrLoadComplete() {
+    public void onComplete(boolean over) {
         mFooterTextView.setText("上拉加载更多");
         mFooterTextView.setVisibility(View.VISIBLE);
         mFooterProgressBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void getPercentage(float rate) {
+    public void onPercentage(float rate) {
         //用不上的话可以不实现具体逻辑
     }
 }
