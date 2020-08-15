@@ -3,11 +3,7 @@ package k.lhl.test
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import k.lhl.adapter.*
-import k.lhl.recyclerview.PullBaseView
-import k.lhl.recyclerview.TicketFooterView
-import k.lhl.recyclerview.TicketHeaderView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_test.view.*
 
@@ -32,19 +28,19 @@ class MainActivity : AppCompatActivity() {
         }.setOnItemLongClickListener {
             Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
         })
-        recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
+//        recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
 
-//        recyList.setOnRefreshListener {
-//            recyList.postDelayed({
-//                recyList.onHeaderRefreshComplete()
-//            }, 3000)
-//        }
-//
-//        recyList.setOnLoadListener {
-//            recyList.postDelayed({
-//                recyList.onFooterRefreshComplete()
-//            }, 3000)
-//        }
+        recyList.setOnRefreshListener {
+            recyList.postDelayed({
+                recyList.onHeaderRefreshComplete()
+            }, 3000)
+        }
+
+        recyList.setOnLoadListener {
+            recyList.postDelayed({
+                recyList.onFooterRefreshComplete()
+            }, 3000)
+        }
 
 //
 //

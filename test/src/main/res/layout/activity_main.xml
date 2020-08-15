@@ -10,11 +10,12 @@
         android:id="@+id/recyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:visibility="visible"
-        app:enableFooter="true"
+        app:enableFooter="false"
         app:enableHeader="false"
-        tools:listitem="@layout/item_test" />
+        app:listItem="@layout/item_test"
+        app:headerClass="k.lhl.test.MyHeaderView"
+        />
 
 
 </RelativeLayout>

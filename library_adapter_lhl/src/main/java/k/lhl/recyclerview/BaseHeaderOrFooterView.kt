@@ -47,7 +47,7 @@ open abstract class BaseHeaderOrFooterView @JvmOverloads constructor(protected v
     /**
      * 下拉刷新/上拉加载
      */
-    open fun onPreLoading() {}
+    open fun onPrePull() {}
 
     /**
      * 执行正在刷新/加载的操作

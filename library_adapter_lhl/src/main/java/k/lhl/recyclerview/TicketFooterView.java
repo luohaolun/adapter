@@ -37,7 +37,7 @@ public class TicketFooterView extends BaseHeaderOrFooterView {
     }
 
     @Override
-    public void onPreLoading() {
+    public void onPrePull() {
         mFooterTextView.setText("上拉加载更多");
     }
 

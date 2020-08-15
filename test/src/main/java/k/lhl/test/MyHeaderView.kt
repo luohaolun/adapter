@@ -30,6 +30,6 @@ class MyHeaderView(context: Context, parent: ViewGroup) : BaseHeaderOrFooterView
     override fun onPercentage(rate: Float) {
     }
 
-    override fun onPreLoading() {
+    override fun onPrePull() {
     }
 }

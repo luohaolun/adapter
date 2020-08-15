@@ -1,13 +1,15 @@
 package k.lhl.recyclerview
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Scroller
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import k.lhl.adapter.R
@@ -15,9 +17,9 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.text.DecimalFormat
 
-abstract class PullBaseView<T : RecyclerView> : LinearLayout {
+class PullRecyclerView : LinearLayout {
     //PullBaseView是继承LinearLayout，所以我们的头尾布局和RecycleView都是通过addView方法添加的
-    protected lateinit var mRecyclerView: T
+    lateinit var mRecyclerView: RecyclerView
     private var isCanScrollAtRefreshing = false //刷新时是否可滑动
     private var isCanPullDown = true //是否可下拉
     private var isCanPullUp = true //是否可上拉
@@ -55,13 +57,14 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
      * init-初始化方法，为我们的RecyclerView做一些必要的初始化工作
      */
     private fun init(context: Context, attrs: AttributeSet) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PullBaseView)
-        val headerClassName = typedArray.getString(R.styleable.PullBaseView_headerClass)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PullRecyclerView)
+        val headerClassName = typedArray.getString(R.styleable.PullRecyclerView_headerClass)
         mHeaderView = createHeaderOrFooterView(context, headerClassName, attrs) ?: TicketHeaderView(context, this)
-        val footerClassName = typedArray.getString(R.styleable.PullBaseView_footerClass)
+        val footerClassName = typedArray.getString(R.styleable.PullRecyclerView_footerClass)
+        val itemLayoutId = typedArray.getResourceId(R.styleable.PullRecyclerView_listItem, R.layout.item_default)
         mFooterView = createHeaderOrFooterView(context, footerClassName, attrs) ?: TicketFooterView(context, this)
-        isCanPullDown = typedArray.getBoolean(R.styleable.PullBaseView_enableHeader, false)
-        isCanPullUp = typedArray.getBoolean(R.styleable.PullBaseView_enableFooter, false)
+        isCanPullDown = typedArray.getBoolean(R.styleable.PullRecyclerView_enableHeader, false)
+        isCanPullUp = typedArray.getBoolean(R.styleable.PullRecyclerView_enableFooter, false)
         typedArray.recycle()
         mScroller = Scroller(context)
         //通过回调方法获得一个RecyclerView对象
@@ -73,9 +76,41 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
         //会清空LinearLayout中所有的View，重新添加头布局，然后添加RecyclerView
         if (!isCanPullDown) mHeaderView!!.view!!.visibility = View.INVISIBLE
         if (!isCanPullUp) mFooterView!!.view!!.visibility = View.INVISIBLE
+        orientation = VERTICAL
+
+        if (isInEditMode) {
+            if (isCanPullDown) {
+                mHeaderView!!.getParams().topMargin = 0
+                addView(mHeaderView!!.view!!, mHeaderView!!.getParams())
+            }
+
+            for (i in 0..2) {
+                val itemView = LayoutInflater.from(context).inflate(itemLayoutId, null)
+                addView(itemView)
+            }
+            if(isCanPullUp){
+                addView(mFooterView!!.view!!, mFooterView!!.getParams())
+            }
+            return
+        }
+
         addView(mHeaderView!!.view!!, mHeaderView!!.getParams())
         addView(mRecyclerView)
         addView(mFooterView!!.view!!, mFooterView!!.getParams())
+
+    }
+
+    private fun createRecyclerView(context: Context, attrs: AttributeSet): RecyclerView {
+        /**
+         * 这里返回一个RecyclerView，添加到LinearLayout中
+         * 那么，如果你想使用ListView的话呢，那么你在这里返回就行了
+         * 当然需要修改父类中的泛型相关的地方(包括列表所使用到的Adapter）
+         */
+        val recyclerView = RecyclerView(context, attrs)
+        val layoutManager = LinearLayoutManager(context)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        recyclerView.layoutManager = layoutManager
+        return recyclerView
     }
 
     private fun createHeaderOrFooterView(context: Context, className: String?, attrs: AttributeSet): BaseHeaderOrFooterView? {
@@ -93,10 +128,8 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
                     val headerClass = Class.forName(className, false, classLoader)
                         .asSubclass(BaseHeaderOrFooterView::class.java)
                     var constructor: Constructor<out BaseHeaderOrFooterView>
-                    var constructorArgs: Array<Any>? = null
                     try {
                         constructor = headerClass.getConstructor(Context::class.java, ViewGroup::class.java)
-                        constructorArgs = arrayOf(context, this)
                     } catch (e: NoSuchMethodException) {
                         constructor = try {
                             headerClass.getConstructor()
@@ -109,7 +142,7 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
                         }
                     }
                     constructor.isAccessible = true
-                    constructor.newInstance(constructorArgs)
+                    constructor.newInstance(context, this)
                 } catch (e: ClassNotFoundException) {
                     throw IllegalStateException(
                         attrs.positionDescription
@@ -293,7 +326,7 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
     private val isScrollBottom: Boolean
         get() {
             val linearLayoutManager = mRecyclerView.layoutManager as LinearLayoutManager
-            return linearLayoutManager.findLastVisibleItemPosition() == mRecyclerView.adapter?.itemCount ?: 0 - 1
+            return linearLayoutManager.findLastVisibleItemPosition() == (mRecyclerView.adapter?.itemCount ?: 0) - 1
         }
 
     /**
@@ -310,7 +343,7 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
             mHeaderState = RELEASE_TO_REFRESH
         } else if (newTopMargin < 0 && newTopMargin > -mHeaderView!!.viewHeight) { // 拖动时没有释放
             //调用我们自定义头布局的下拉刷新操作，具体代码在自定义headerview中实现
-            mHeaderView!!.onPreLoading()
+            mHeaderView!!.onPrePull()
             mHeaderState = PULL_TO_REFRESH
         }
     }
@@ -331,7 +364,7 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
             mFooterState = RELEASE_TO_REFRESH
         } else if (Math.abs(newTopMargin) < mHeaderView!!.viewHeight + mFooterView!!.viewHeight) {
             //调用我们自定义尾布局的上拉加载操作，具体代码在自定义footerview中实现
-            mFooterView!!.onPreLoading()
+            mFooterView!!.onPrePull()
             mFooterState = PULL_TO_REFRESH
         }
     }
@@ -491,13 +524,7 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
      * Interface definition for a callback to be invoked when list/grid footer
      * view should be refreshed.
      */
-    interface OnRefreshListener {
-        //下拉刷新的回调方法
-        fun onPullToRefresh(view: PullBaseView<*>?)
 
-        //上拉加载的回调方法
-        fun onPullToLoadMore(view: PullBaseView<*>?)
-    }
 
     /**
      * 设置是否可以在刷新时滑动
@@ -526,15 +553,13 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
         isCanPullDown = canPullDown
     }
 
-    protected abstract fun createRecyclerView(context: Context?, attrs: AttributeSet?): T
-
     /**
      * 用于设置刷新列表头部显示样式
      *
      * @param headerClass
      * @return
      */
-    fun setHeader(headerClass: Class<out BaseHeaderOrFooterView?>): PullBaseView<*> {
+    fun setHeader(headerClass: Class<out BaseHeaderOrFooterView?>): PullRecyclerView {
         try {
             val constructor =
                 headerClass.getConstructor(Context::class.java, ViewGroup::class.java)
@@ -556,7 +581,7 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
      * @param footerClass
      * @return
      */
-    fun setFooter(footerClass: Class<out BaseHeaderOrFooterView?>): PullBaseView<*> {
+    fun setFooter(footerClass: Class<out BaseHeaderOrFooterView?>): PullRecyclerView {
         try {
             val constructor =
                 footerClass.getConstructor(Context::class.java, ViewGroup::class.java)
@@ -570,6 +595,10 @@ abstract class PullBaseView<T : RecyclerView> : LinearLayout {
             e.printStackTrace()
         }
         return this
+    }
+
+    fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+        mRecyclerView.adapter = adapter
     }
 
     companion object {

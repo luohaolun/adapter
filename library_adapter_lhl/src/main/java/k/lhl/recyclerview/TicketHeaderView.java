@@ -45,7 +45,7 @@ public class TicketHeaderView extends BaseHeaderOrFooterView {
     }
 
     @Override
-    public void onPreLoading() {
+    public void onPrePull() {
 //        text.setText("下拉刷新数据");
         progressBar.setVisibility(View.GONE);
     }
