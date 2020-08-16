@@ -20,25 +20,25 @@ class MainActivity : AppCompatActivity() {
 
 //        recyList.setHeader(MyHeaderView::class.java)
 
-        recyList.setAdapter(RecyclerAdapter(data, R.layout.item_test) {
+        recyList.setAdapter(data){
             tvNum.text = it
             btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
         }.setOnItemClickListener(500) {
             Toast.makeText(this@MainActivity, "点击    $position    $it", Toast.LENGTH_SHORT).show()
         }.setOnItemLongClickListener {
             Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
-        })
+        }
 //        recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
 
         recyList.setOnRefreshListener {
             recyList.postDelayed({
-                recyList.onHeaderRefreshComplete()
+                recyList.onHeaderComplete()
             }, 3000)
         }
 
         recyList.setOnLoadListener {
             recyList.postDelayed({
-                recyList.onFooterRefreshComplete()
+                recyList.onFooterComplete()
             }, 3000)
         }
 

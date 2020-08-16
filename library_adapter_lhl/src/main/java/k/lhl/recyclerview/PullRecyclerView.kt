@@ -1,7 +1,6 @@
 package k.lhl.recyclerview
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -9,17 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Scroller
-import android.widget.TextView
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import k.lhl.adapter.R
+import k.lhl.adapter.RecyclerAdapter
+import lhl.kotlinextends.click
+import lhl.kotlinextends.longClick
 import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.text.DecimalFormat
 
+
 class PullRecyclerView : LinearLayout {
     //PullBaseView是继承LinearLayout，所以我们的头尾布局和RecycleView都是通过addView方法添加的
     lateinit var mRecyclerView: RecyclerView
+        private set
     private var isCanScrollAtRefreshing = false //刷新时是否可滑动
     private var isCanPullDown = true //是否可下拉
     private var isCanPullUp = true //是否可上拉
@@ -28,10 +32,10 @@ class PullRecyclerView : LinearLayout {
     private var mLastMotionY = 0
 
     //headerview-头布局
-    private var mHeaderView: BaseHeaderOrFooterView? = null
+    private lateinit var mHeaderView: BaseHeaderOrFooterView
 
     //footerview-尾布局
-    private var mFooterView: BaseHeaderOrFooterView? = null
+    private lateinit var mFooterView: BaseHeaderOrFooterView
 
     //头状态
     private var mHeaderState = 0
@@ -47,6 +51,8 @@ class PullRecyclerView : LinearLayout {
     private var loadListener: (() -> Unit)? = null
     private var mScroller: Scroller? = null
 
+    private var itemLayoutId = R.layout.item_default
+
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context, attrs)
@@ -59,12 +65,13 @@ class PullRecyclerView : LinearLayout {
     private fun init(context: Context, attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PullRecyclerView)
         val headerClassName = typedArray.getString(R.styleable.PullRecyclerView_headerClass)
-        mHeaderView = createHeaderOrFooterView(context, headerClassName, attrs) ?: TicketHeaderView(context, this)
+        mHeaderView = createHeaderOrFooterView(context, headerClassName, attrs) ?: DefaultHeaderView(context, this)
         val footerClassName = typedArray.getString(R.styleable.PullRecyclerView_footerClass)
-        val itemLayoutId = typedArray.getResourceId(R.styleable.PullRecyclerView_listItem, R.layout.item_default)
-        mFooterView = createHeaderOrFooterView(context, footerClassName, attrs) ?: TicketFooterView(context, this)
-        isCanPullDown = typedArray.getBoolean(R.styleable.PullRecyclerView_enableHeader, false)
-        isCanPullUp = typedArray.getBoolean(R.styleable.PullRecyclerView_enableFooter, false)
+        itemLayoutId = typedArray.getResourceId(R.styleable.PullRecyclerView_item, R.layout.item_default)
+        mFooterView = createHeaderOrFooterView(context, footerClassName, attrs) ?: DefaultFooterView(context, this)
+        isCanPullDown = typedArray.getBoolean(R.styleable.PullRecyclerView_enableHeader, true)
+        isCanPullUp = typedArray.getBoolean(R.styleable.PullRecyclerView_enableFooter, true)
+        val dividerDrawable = typedArray.getDrawable(R.styleable.PullRecyclerView_itemDivider)
         typedArray.recycle()
         mScroller = Scroller(context)
         //通过回调方法获得一个RecyclerView对象
@@ -74,29 +81,33 @@ class PullRecyclerView : LinearLayout {
         mRecyclerView!!.overScrollMode = View.OVER_SCROLL_NEVER
         //这里仅仅添加了一个RecyclerView只是做占位使用，在我们具体设置头布局的时候
         //会清空LinearLayout中所有的View，重新添加头布局，然后添加RecyclerView
-        if (!isCanPullDown) mHeaderView!!.view!!.visibility = View.INVISIBLE
-        if (!isCanPullUp) mFooterView!!.view!!.visibility = View.INVISIBLE
+        if (!isCanPullDown) mHeaderView.view.visibility = View.INVISIBLE
+        if (!isCanPullUp) mFooterView.view.visibility = View.INVISIBLE
         orientation = VERTICAL
+        if (dividerDrawable != null) {
+            val divider = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            divider.setDrawable(dividerDrawable)
+            mRecyclerView.addItemDecoration(divider)
+        }
 
         if (isInEditMode) {
             if (isCanPullDown) {
-                mHeaderView!!.getParams().topMargin = 0
-                addView(mHeaderView!!.view!!, mHeaderView!!.getParams())
+                mHeaderView.getParams().topMargin = 0
+                addView(mHeaderView.view, mHeaderView.getParams())
             }
-
-            for (i in 0..2) {
-                val itemView = LayoutInflater.from(context).inflate(itemLayoutId, null)
-                addView(itemView)
-            }
-            if(isCanPullUp){
-                addView(mFooterView!!.view!!, mFooterView!!.getParams())
+            mRecyclerView!!.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val list = if (itemLayoutId == R.layout.item_default) arrayListOf(1) else arrayListOf(1, 2, 3)
+            mRecyclerView.adapter = RecyclerAdapter1(context, list, itemLayoutId) {}
+            addView(mRecyclerView)
+            if (isCanPullUp) {
+                addView(mFooterView.view, mFooterView.getParams())
             }
             return
         }
 
-        addView(mHeaderView!!.view!!, mHeaderView!!.getParams())
+        addView(mHeaderView.view, mHeaderView.getParams())
         addView(mRecyclerView)
-        addView(mFooterView!!.view!!, mFooterView!!.getParams())
+        addView(mFooterView.view, mFooterView.getParams())
 
     }
 
@@ -248,15 +259,15 @@ class PullRecyclerView : LinearLayout {
                         headerRefreshing()
                     } else {
                         // 还没有执行刷新，重新隐藏
-                        setHeaderTopMargin(-mHeaderView!!.viewHeight, true)
+                        setHeaderTopMargin(-mHeaderView.viewHeight, true)
                     }
                 } else if (mPullState == PULL_UP_STATE) {
-                    if (isCanPullUp && Math.abs(topMargin) >= mHeaderView!!.viewHeight + mFooterView!!.viewHeight) {
+                    if (isCanPullUp && Math.abs(topMargin) >= mHeaderView.viewHeight + mFooterView.viewHeight) {
                         // 开始执行footer 刷新
                         footerRefreshing()
                     } else {
                         // 还没有执行刷新，重新隐藏
-                        setHeaderTopMargin(-mHeaderView!!.viewHeight, true)
+                        setHeaderTopMargin(-mHeaderView.viewHeight, true)
                     }
                 }
             }
@@ -339,11 +350,11 @@ class PullRecyclerView : LinearLayout {
         // 当headerview的topMargin>=0时，说明已经完全显示出来了,修改header view的提示状态
         if (newTopMargin >= 0 && mHeaderState != RELEASE_TO_REFRESH) {
             //调用我们自定义头布局的释放刷新操作，具体代码在自定义headerview中实现
-            mHeaderView!!.onPreRelease()
+            mHeaderView.onPreRelease()
             mHeaderState = RELEASE_TO_REFRESH
-        } else if (newTopMargin < 0 && newTopMargin > -mHeaderView!!.viewHeight) { // 拖动时没有释放
+        } else if (newTopMargin < 0 && newTopMargin > -mHeaderView.viewHeight) { // 拖动时没有释放
             //调用我们自定义头布局的下拉刷新操作，具体代码在自定义headerview中实现
-            mHeaderView!!.onPrePull()
+            mHeaderView.onPrePull()
             mHeaderState = PULL_TO_REFRESH
         }
     }
@@ -358,13 +369,13 @@ class PullRecyclerView : LinearLayout {
         val newTopMargin = changingHeaderViewTopMargin(deltaY)
         // 如果header view topMargin 的绝对值大于或等于header + footer 的高度
         // 说明footer view 完全显示出来了，修改footer view 的提示状态
-        if (Math.abs(newTopMargin) >= mHeaderView!!.viewHeight + mFooterView!!.viewHeight && mFooterState != RELEASE_TO_REFRESH) {
+        if (Math.abs(newTopMargin) >= mHeaderView.viewHeight + mFooterView.viewHeight && mFooterState != RELEASE_TO_REFRESH) {
             //调用我们自定义尾布局的释放加载操作，具体代码在自定义footerview中实现
-            mFooterView!!.onPreRelease()
+            mFooterView.onPreRelease()
             mFooterState = RELEASE_TO_REFRESH
-        } else if (Math.abs(newTopMargin) < mHeaderView!!.viewHeight + mFooterView!!.viewHeight) {
+        } else if (Math.abs(newTopMargin) < mHeaderView.viewHeight + mFooterView.viewHeight) {
             //调用我们自定义尾布局的上拉加载操作，具体代码在自定义footerview中实现
-            mFooterView!!.onPrePull()
+            mFooterView.onPrePull()
             mFooterState = PULL_TO_REFRESH
         }
     }
@@ -376,39 +387,39 @@ class PullRecyclerView : LinearLayout {
      * @description
      */
     private fun changingHeaderViewTopMargin(deltaY: Int): Int {
-        val params = mHeaderView!!.view!!.layoutParams as LayoutParams
+        val params = mHeaderView.view.layoutParams as LayoutParams
         val newTopMargin = params.topMargin + deltaY * 0.3f
 
         //此处要做的事情是通过布局返回一个百分比大小，供有的头布局动画使用
-        if (mHeaderView!!.viewHeight + params.topMargin <= mHeaderView!!.viewHeight) {
+        if (mHeaderView.viewHeight + params.topMargin <= mHeaderView.viewHeight) {
             //如果我们头布局的高度是正值，params.topMargin是负值
             //当头布局从完全隐藏到刚好显示的过程是0～mHeaderView.getViewHeight()的过程
             //所以用它做分子，分母就是我们的头布局高度
             //计算并通过方法返回比例
             val format = DecimalFormat("0.00")
-            val differ = mHeaderView!!.viewHeight + params.topMargin.toFloat()
-            val total = mHeaderView!!.viewHeight.toFloat()
+            val differ = mHeaderView.viewHeight + params.topMargin.toFloat()
+            val total = mHeaderView.viewHeight.toFloat()
             val rate = differ / total
-            mHeaderView!!.onPercentage(format.format(rate.toDouble()).toFloat())
+            mHeaderView.onPercentage(format.format(rate.toDouble()).toFloat())
         } else {
             //走到这儿说明我们的头布局已经被继续下拉，超过了本身的大小
             //所以返回1恒定值表示100%，不在继续增加
-            mHeaderView!!.onPercentage(1.00f)
+            mHeaderView.onPercentage(1.00f)
         }
 
         // 这里对上拉做一下限制,因为当前上拉后然后不释放手指直接下拉,会把下拉刷新给触发了,感谢网友yufengzungzhe的指出
         // 表示如果是在上拉后一段距离,然后直接下拉
-        if (deltaY > 0 && mPullState == PULL_UP_STATE && Math.abs(params.topMargin) <= mHeaderView!!.viewHeight) {
+        if (deltaY > 0 && mPullState == PULL_UP_STATE && Math.abs(params.topMargin) <= mHeaderView.viewHeight) {
             //如果每次偏移量>0，说明是下拉刷新，并且params.topMargin绝对值小于等于头布局高度
             //说明头布局还未完全显示，直接返回
             return params.topMargin
         }
         // 同样地,对下拉做一下限制,避免出现跟上拉操作时一样的bug
-        if (deltaY < 0 && mPullState == PULL_DOWN_STATE && params.topMargin < 0 && Math.abs(params.topMargin) >= mHeaderView!!.viewHeight) {
+        if (deltaY < 0 && mPullState == PULL_DOWN_STATE && params.topMargin < 0 && Math.abs(params.topMargin) >= mHeaderView.viewHeight) {
             return params.topMargin
         }
         params.topMargin = newTopMargin.toInt()
-        mHeaderView!!.view!!.layoutParams = params
+        mHeaderView.view.layoutParams = params
         invalidate()
         return params.topMargin
     }
@@ -431,7 +442,7 @@ class PullRecyclerView : LinearLayout {
     private fun footerRefreshing() {
         mFooterState = REFRESHING
         //将我们的头布局margin设为头布局+尾布局高度和，这样尾布局将完全显示
-        val top = mHeaderView!!.viewHeight + mFooterView!!.viewHeight
+        val top = mHeaderView.viewHeight + mFooterView.viewHeight
         setHeaderTopMargin(-top, true)
         //通过自定义尾布局回调方法，实行我们自定义的逻辑
         mFooterView?.onLoading()
@@ -447,7 +458,7 @@ class PullRecyclerView : LinearLayout {
     private var offset = 0
     private var curTop = 0
     private fun setHeaderTopMargin(topMargin: Int, isStart: Boolean) {
-        curTop = mHeaderView!!.view!!.top
+        curTop = mHeaderView.view.top
         offset = curTop - topMargin
         mScroller!!.startScroll(0, 0, 0, offset, 500)
         invalidate() //这里必须调用invalidate()才能保证computeScroll()会被调用，否则不一定会刷新界面，看不到滚动效果
@@ -457,9 +468,9 @@ class PullRecyclerView : LinearLayout {
         //先判断mScroller滚动是否完成
         if (mScroller!!.computeScrollOffset()) {
             //这里调用View的scrollTo()完成实际的滚动
-            val params = mHeaderView!!.getParams()
+            val params = mHeaderView.getParams()
             params.topMargin = curTop - mScroller!!.currY
-            mHeaderView!!.view!!.layoutParams = params
+            mHeaderView.view.layoutParams = params
             //必须调用该方法，否则不一定能看到滚动效果
             postInvalidate()
         }
@@ -469,20 +480,20 @@ class PullRecyclerView : LinearLayout {
     /**
      * header view 完成更新后恢复初始状态
      */
-    fun onHeaderRefreshComplete() {
-        setHeaderTopMargin(-mHeaderView!!.viewHeight, false)
+    fun onHeaderComplete(over: Boolean = false) {
+        setHeaderTopMargin(-mHeaderView.viewHeight, false)
         //通过自定义头布局更新我们刷新完成后的头布局各控件的状态和显示
-        mHeaderView?.onComplete()
+        mHeaderView?.onComplete(over)
         mHeaderState = PULL_TO_REFRESH
     }
 
     /**
      * footer view 完成更新后恢复初始状态
      */
-    fun onFooterRefreshComplete() {
-        setHeaderTopMargin(-mHeaderView!!.viewHeight, false)
+    fun onFooterComplete(over: Boolean = false) {
+        setHeaderTopMargin(-mHeaderView.viewHeight, false)
         //通过自定义尾布局更新我们刷新完成后的尾布局各控件的状态和显示
-        mFooterView!!.onComplete()
+        mFooterView.onComplete(over)
         mFooterState = PULL_TO_REFRESH
         if (mRecyclerView.adapter != null) {
             //加载完后列表停留在最后一项
@@ -497,7 +508,7 @@ class PullRecyclerView : LinearLayout {
      */
     private val headerTopMargin: Int
         private get() {
-            val params = mHeaderView!!.view!!.layoutParams as LayoutParams
+            val params = mHeaderView.view.layoutParams as LayoutParams
             return params.topMargin
         }
 
@@ -565,10 +576,10 @@ class PullRecyclerView : LinearLayout {
                 headerClass.getConstructor(Context::class.java, ViewGroup::class.java)
             constructor.isAccessible = true
             val view = constructor.newInstance(context, this)
-            removeView(mHeaderView!!.view)
-            mHeaderView = view
-            if (!isCanPullDown) mHeaderView!!.view!!.visibility = View.INVISIBLE
-            addView(mHeaderView!!.view, 0, mHeaderView!!.getParams())
+            removeView(mHeaderView.view)
+            mHeaderView = view!!
+            if (!isCanPullDown) mHeaderView.view.visibility = View.INVISIBLE
+            addView(mHeaderView.view, 0, mHeaderView.getParams())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -587,19 +598,28 @@ class PullRecyclerView : LinearLayout {
                 footerClass.getConstructor(Context::class.java, ViewGroup::class.java)
             constructor.isAccessible = true
             val view = constructor.newInstance(context, this)
-            removeView(mFooterView!!.view)
-            mFooterView = view
-            if (!isCanPullUp) mFooterView!!.view!!.visibility = View.INVISIBLE
-            addView(mFooterView!!.view, mFooterView!!.getParams())
+            removeView(mFooterView.view)
+            mFooterView = view!!
+            if (!isCanPullUp) mFooterView.view.visibility = View.INVISIBLE
+            addView(mFooterView.view, mFooterView.getParams())
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return this
     }
 
-    fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
-        mRecyclerView.adapter = adapter
+    fun <T> setAdapter(data: List<T>, bindView: View.(T) -> Unit): RecyclerAdapter<T> {
+        return RecyclerAdapter(data, itemLayoutId, bindView).apply { mRecyclerView.adapter = this }
     }
+
+    fun <T> setAdapter(data: List<T>, layoutId: Int, bindView: View.(T) -> Unit): RecyclerAdapter<T> {
+        return RecyclerAdapter(data, layoutId, bindView).apply { mRecyclerView.adapter = this }
+    }
+
+    fun notifyDataSetChanged() {
+        mRecyclerView.adapter?.notifyDataSetChanged()
+    }
+
 
     companion object {
         // pull state
@@ -611,4 +631,44 @@ class PullRecyclerView : LinearLayout {
         private const val RELEASE_TO_REFRESH = 3
         private const val REFRESHING = 4
     }
+
+
+    /**
+     * Created by luohaolun.
+     * Date: 2019/7/2
+     */
+
+    private class RecyclerAdapter1<T>(private val context: Context, private val data: List<T>, private val layoutId: Int, private val bindView: View.(T) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+        private var clickListener: (View.(T) -> Unit)? = null
+        private var longClickListener: (View.(T) -> Unit)? = null
+        private var clickIntervalTime = 10
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            holder.itemView.setTag(R.id.adapterPosition, position)
+            holder.itemView.run { bindView(data[position]) }
+            clickListener?.let { listener -> holder.itemView.click(clickIntervalTime) { listener.invoke(it!!, data[position]) } }
+            longClickListener?.let { listener -> holder.itemView.longClick { listener.invoke(it!!, data[position]);true } }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(LayoutInflater.from(context).inflate(layoutId, parent, false))
+
+        override fun getItemCount(): Int = data.size
+
+        fun setOnItemClickListener(interval: Int = 10, listener: View.(T) -> Unit): RecyclerAdapter1<T> {
+            this.clickIntervalTime = interval
+            this.clickListener = listener
+            return this
+        }
+
+        fun setOnItemLongClickListener(listener: View.(T) -> Unit): RecyclerAdapter1<T> {
+            this.longClickListener = listener
+            return this
+        }
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    }
+
+
 }

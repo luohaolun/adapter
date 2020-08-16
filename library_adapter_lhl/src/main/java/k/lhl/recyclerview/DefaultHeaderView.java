@@ -12,13 +12,13 @@ import androidx.annotation.NonNull;
 import k.lhl.adapter.R;
 
 
-public class TicketHeaderView extends BaseHeaderOrFooterView {
+public class DefaultHeaderView extends BaseHeaderOrFooterView {
 
     private ProgressBar progressBar;
     private ImageView image;
 //    private TextView text;
 
-    public TicketHeaderView(Context context, @NonNull ViewGroup root) {
+    public DefaultHeaderView(Context context, @NonNull ViewGroup root) {
         super(context, root, HEADER);
     }
 

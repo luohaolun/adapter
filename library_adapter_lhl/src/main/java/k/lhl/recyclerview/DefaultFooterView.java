@@ -11,12 +11,12 @@ import androidx.annotation.NonNull;
 import k.lhl.adapter.R;
 
 
-public class TicketFooterView extends BaseHeaderOrFooterView {
+public class DefaultFooterView extends BaseHeaderOrFooterView {
 
     private TextView mFooterTextView;
     private ProgressBar mFooterProgressBar;
 
-    public TicketFooterView(Context context, @NonNull ViewGroup root) {
+    public DefaultFooterView(Context context, @NonNull ViewGroup root) {
         super(context, root, FOOTER);
     }
 
@@ -52,10 +52,5 @@ public class TicketFooterView extends BaseHeaderOrFooterView {
         mFooterTextView.setText("上拉加载更多");
         mFooterTextView.setVisibility(View.VISIBLE);
         mFooterProgressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onPercentage(float rate) {
-        //用不上的话可以不实现具体逻辑
     }
 }

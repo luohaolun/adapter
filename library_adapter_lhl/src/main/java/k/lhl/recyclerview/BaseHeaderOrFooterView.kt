@@ -13,7 +13,7 @@ import java.util.*
  * 因为需要强制我们的子类实现某些方法，所以这里用的是抽象类
  */
 open abstract class BaseHeaderOrFooterView @JvmOverloads constructor(protected val context: Context, root: ViewGroup, private val type: Int, attachToRoot: Boolean = false) {
-    var view: View? = null
+    lateinit var view: View
     var viewHeight = 0
     private var params: LinearLayout.LayoutParams? = null
     private fun createView(context: Context, root: ViewGroup, attachToRoot: Boolean) {
@@ -35,7 +35,7 @@ open abstract class BaseHeaderOrFooterView @JvmOverloads constructor(protected v
         return sdf.format(Date())
     }
 
-    protected abstract fun onViewCreated(view: View?)
+    protected open fun onViewCreated(view: View?) {}
     protected abstract fun onBindLayoutId(): Int
 
     /**
@@ -66,7 +66,7 @@ open abstract class BaseHeaderOrFooterView @JvmOverloads constructor(protected v
     /**
      * 这里提供一个方法能够获取下拉头显示的百分比，供动画效果使用
      */
-    abstract fun onPercentage(rate: Float)
+    open fun onPercentage(rate: Float) {}
 
     private fun measureView(child: View?) {
         var p = child!!.layoutParams

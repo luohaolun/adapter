@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#eee"
+    android:layout_height="80dp"
+    android:background="@color/colorPrimary"
     android:gravity="center"
-    android:minHeight="200dp"
-    android:text="无Item布局" />
+    android:text="我是底部11111111"
+    android:textColor="#ffffff"/>
