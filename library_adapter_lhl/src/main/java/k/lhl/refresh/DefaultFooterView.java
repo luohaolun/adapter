@@ -1,4 +1,4 @@
-package k.lhl.recyclerview;
+package k.lhl.refresh;
 
 import android.content.Context;
 import android.view.View;
@@ -49,7 +49,8 @@ public class DefaultFooterView extends BaseHeaderOrFooterView {
 
     @Override
     public void onComplete(boolean over) {
-        mFooterTextView.setText("上拉加载更多");
+        if (over) mFooterTextView.setText("已经到底了~");
+        else mFooterTextView.setText("上拉加载更多");
         mFooterTextView.setVisibility(View.VISIBLE);
         mFooterProgressBar.setVisibility(View.GONE);
     }

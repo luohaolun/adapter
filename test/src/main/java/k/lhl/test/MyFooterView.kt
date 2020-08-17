@@ -1,9 +1,8 @@
 package k.lhl.test
 
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
-import k.lhl.recyclerview.BaseHeaderOrFooterView
+import k.lhl.refresh.BaseHeaderOrFooterView
 
 /**
  * Created by luohaolun

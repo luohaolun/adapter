@@ -19,8 +19,9 @@ class MainActivity : AppCompatActivity() {
         }
 
 //        recyList.setHeader(MyHeaderView::class.java)
-
-        recyList.setAdapter(data){
+//        recyList.adapter = RecyclerAdapter(data, R.layout.item_test)
+        recyList.setAdapter(data)
+        {
             tvNum.text = it
             btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
         }.setOnItemClickListener(500) {
@@ -34,14 +35,17 @@ class MainActivity : AppCompatActivity() {
             recyList.postDelayed({
                 recyList.onHeaderComplete()
             }, 3000)
-        }
-
-        recyList.setOnLoadListener {
+        }.setOnLoadListener {
             recyList.postDelayed({
-                recyList.onFooterComplete()
+                recyList.onFooterComplete(true)
             }, 3000)
         }
 
+//        refresh.setOnRefreshListener {
+//            refresh.postDelayed({
+//                refresh.onHeaderComplete()
+//            }, 2000)
+//        }
 //
 //
 //        lvList.adapter = Adapter(data, R.layout.item_test) {
