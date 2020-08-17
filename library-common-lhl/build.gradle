@@ -1,3 +1,4 @@
+//apply plugin: 'com.android.application'
 apply plugin: 'com.android.library'
 
 apply plugin: 'kotlin-android'
@@ -7,7 +8,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-//        applicationId "k.lhl.adapter"
+//        applicationId "lhl.kotlinextends"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
@@ -22,10 +23,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation 'androidx.core:core-ktx:1.3.1'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.blankj:utilcode:1.23.7'
-    implementation project(path: ':library-common-lhl')
 }

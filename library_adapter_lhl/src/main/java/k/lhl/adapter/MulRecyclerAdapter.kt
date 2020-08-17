@@ -48,7 +48,7 @@ class MulRecyclerAdapter<T>(private val data: List<Pair<Int, T>>, type: Int, lay
 
     override fun getItemViewType(position: Int): Int = data[position].first
 
-    fun setOnItemClickListener(interval: Int = 10,listener: View.(T) -> Unit): MulRecyclerAdapter<T> {
+    fun setOnItemClickListener(interval: Int = 10, listener: View.(T) -> Unit): MulRecyclerAdapter<T> {
         clickIntervalTime = interval
         this.clickListener = listener
         return this
