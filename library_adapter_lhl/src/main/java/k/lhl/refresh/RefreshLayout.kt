@@ -14,20 +14,20 @@ import java.lang.reflect.InvocationTargetException
 import java.text.DecimalFormat
 
 
-class RefreshLayout : LinearLayout {
-    protected var isCanScrollAtRefreshing = false //刷新时是否可滑动
-    protected var isCanPullDown = true //是否可下拉
-    protected var isCanPullUp = true //是否可上拉
-    protected var isLoadMoreOver = false//下拉已经没有数据
+open class RefreshLayout : LinearLayout {
+    private var isCanScrollAtRefreshing = true //刷新时是否可滑动
+    private var isCanPullDown = true //是否可下拉
+    private var isCanPullUp = true //是否可上拉
+    private var isLoadMoreOver = false//下拉已经没有数据
 
     //记住上次落点的坐标
     private var mLastMotionY = 0
 
     //headerview-头布局
-    protected lateinit var mHeaderView: BaseHeaderOrFooterView
+    private lateinit var mHeaderView: BaseHeaderOrFooterView
 
     //footerview-尾布局
-    protected lateinit var mFooterView: BaseHeaderOrFooterView
+    private lateinit var mFooterView: BaseHeaderOrFooterView
 
     //头状态
     private var mHeaderState = 0
@@ -43,7 +43,7 @@ class RefreshLayout : LinearLayout {
     private var loadListener: (() -> Unit)? = null
     private var mScroller: Scroller? = null
 
-    protected lateinit var mContentView: View
+    private lateinit var mContentView: View
 
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -74,12 +74,14 @@ class RefreshLayout : LinearLayout {
      */
     override fun onFinishInflate() {
         super.onFinishInflate()
-        mContentView = getChildAt(0) ?: LayoutInflater.from(context).inflate(R.layout.item_default, null)
+        mContentView = getContentView()
+        removeAllViews()
         if (isInEditMode) {
             if (isCanPullDown) {
                 mHeaderView.getParams().topMargin = 0
                 addView(mHeaderView.view, 0, mHeaderView.getParams())
             }
+            addView(mContentView, 1)
             if (isCanPullUp) {
                 addView(mFooterView.view, 2, mFooterView.getParams())
             }
@@ -87,7 +89,13 @@ class RefreshLayout : LinearLayout {
             return
         }
         addView(mHeaderView.view, 0, mHeaderView.getParams())
+        addView(mContentView, 1)
         addView(mFooterView.view, 2, mFooterView.getParams())
+    }
+
+    open fun getContentView(): View {
+        mContentView = getChildAt(0) ?: LayoutInflater.from(context).inflate(R.layout.item_default, null)
+        return mContentView
     }
 
     private fun createHeaderOrFooterView(context: Context, className: String?, attrs: AttributeSet): BaseHeaderOrFooterView? {

@@ -19,11 +19,11 @@
         app:itemDivider="@drawable/default_item_divider" />
 
 <!--    <k.lhl.refresh.RefreshLayout-->
-<!--        android:background="#eee"-->
 <!--        android:id="@+id/refresh"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"-->
 <!--        android:layout_weight="1"-->
+<!--        android:background="#eee"-->
 <!--        app:enableFooter="true"-->
 <!--        app:enableHeader="true">-->
 

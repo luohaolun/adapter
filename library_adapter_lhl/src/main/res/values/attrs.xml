@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="enableHeader" format="boolean" />
-    <attr name="enableFooter" format="boolean" />
-    <attr name="headerClass" format="string" />
-    <attr name="footerClass" format="string" />
-
     <declare-styleable name="PullRecyclerView">
-        <attr name="enableHeader" />
-        <attr name="enableFooter" />
-        <attr name="headerClass" />
-        <attr name="footerClass" />
         <attr name="item" format="reference" />
         <attr name="itemDivider" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="RefreshLayout">
-        <attr name="enableHeader" />
-        <attr name="enableFooter" />
-        <attr name="headerClass" />
-        <attr name="footerClass" />
+        <attr name="enableHeader" format="boolean" />
+        <attr name="enableFooter" format="boolean" />
+        <attr name="headerClass" format="string" />
+        <attr name="footerClass" format="string" />
     </declare-styleable>
 </resources>

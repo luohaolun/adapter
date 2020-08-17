@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
         }.setOnItemLongClickListener {
             Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
         }
+
+        recyList.setHeader(MyHeaderView::class.java)
+
 //        recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
 
         recyList.setOnRefreshListener {
@@ -44,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 //        refresh.setOnRefreshListener {
 //            refresh.postDelayed({
 //                refresh.onHeaderComplete()
+//            }, 2000)
+//        }.setOnLoadListener {
+//            refresh.postDelayed({
+//                refresh.onFooterComplete(true)
 //            }, 2000)
 //        }
 //

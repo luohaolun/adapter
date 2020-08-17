@@ -28,7 +28,7 @@ public class DefaultFooterView extends BaseHeaderOrFooterView {
 
     @Override
     protected int onBindLayoutId() {
-        return R.layout.refresh_footer;
+        return R.layout.default_footer;
     }
 
     @Override
