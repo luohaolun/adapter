@@ -9,29 +9,33 @@
 
 
     <k.lhl.refresh.PullRecyclerView
-        android:id="@+id/recyList"
+        android:id="@+id/recyclerList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
+        app:empty="@layout/default_empty_view"
+        app:enableEmpty="true"
         app:enableFooter="true"
         app:enableHeader="true"
+        app:footerClass="k.lhl.test.MyFooterView"
+        app:headerClass="k.lhl.test.MyHeaderView"
         app:item="@layout/item_test"
         app:itemDivider="@drawable/default_item_divider" />
 
 <!--    <k.lhl.refresh.RefreshLayout-->
 <!--        android:id="@+id/refresh"-->
 <!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_weight="1"-->
-<!--        android:background="#eee"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:empty="@layout/default_empty_view"-->
 <!--        app:enableFooter="true"-->
-<!--        app:enableHeader="true">-->
+<!--        app:enableHeader="true"-->
+<!--        app:footerClass="k.lhl.test.MyFooterView"-->
+<!--        app:headerClass="k.lhl.test.MyHeaderView">-->
 
 <!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/recyList"-->
+<!--            android:id="@+id/recyclerList"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent"-->
-<!--            android:background="#ffffff"-->
 <!--            android:orientation="vertical"-->
 <!--            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
 <!--            tools:itemCount="10"-->

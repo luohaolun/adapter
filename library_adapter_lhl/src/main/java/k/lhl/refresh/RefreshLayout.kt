@@ -7,8 +7,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.Scroller
+import androidx.annotation.LayoutRes
 import k.lhl.adapter.R
+import lhl.kotlinextends.e
+import lhl.kotlinextends.visible
 import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.text.DecimalFormat
@@ -45,6 +49,8 @@ open class RefreshLayout : LinearLayout {
 
     private lateinit var mContentView: View
 
+    private lateinit var scrollView: ScrollView
+
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context, attrs)
@@ -62,8 +68,14 @@ open class RefreshLayout : LinearLayout {
         mFooterView = createHeaderOrFooterView(context, footerClassName, attrs) ?: DefaultFooterView(context, this)
         isCanPullDown = typedArray.getBoolean(R.styleable.RefreshLayout_enableHeader, true)
         isCanPullUp = typedArray.getBoolean(R.styleable.RefreshLayout_enableFooter, true)
+        val emptyViewId = typedArray.getResourceId(R.styleable.RefreshLayout_empty, R.layout.default_empty_view)
+        val emptyView = LayoutInflater.from(context).inflate(emptyViewId, null)
         typedArray.recycle()
         mScroller = Scroller(context)
+        scrollView = ScrollView(context, attrs)
+        scrollView.layoutParams = ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        scrollView.isFillViewport = true
+        scrollView.addView(emptyView)
         if (!isCanPullDown) mHeaderView.view.visibility = View.INVISIBLE
         if (!isCanPullUp) mFooterView.view.visibility = View.INVISIBLE
         orientation = VERTICAL
@@ -88,9 +100,13 @@ open class RefreshLayout : LinearLayout {
             mContentView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1.0f)
             return
         }
-        addView(mHeaderView.view, 0, mHeaderView.getParams())
-        addView(mContentView, 1)
-        addView(mFooterView.view, 2, mFooterView.getParams())
+
+
+        scrollView.visible = false
+        addView(mHeaderView.view, mHeaderView.getParams())
+        addView(mContentView)
+        addView(scrollView)
+        addView(mFooterView.view, mFooterView.getParams())
     }
 
     open fun getContentView(): View {
@@ -535,6 +551,18 @@ open class RefreshLayout : LinearLayout {
             e.printStackTrace()
         }
         return this
+    }
+
+    fun setEmpty(@LayoutRes layoutId: Int) {
+        val view = LayoutInflater.from(context).inflate(layoutId, null)
+        view.visible = scrollView.visible
+        scrollView.removeAllViews()
+        scrollView.addView(view)
+    }
+
+    fun showEmpty(enable: Boolean = true) {
+        scrollView.visible = enable
+        mContentView.visible = !enable
     }
 
 

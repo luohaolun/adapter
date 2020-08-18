@@ -21,6 +21,7 @@ class PullRecyclerView : RefreshLayout {
 
     private var itemLayoutId = R.layout.item_default
 
+    private var enableEmpty: Boolean = true
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context, attrs)
@@ -34,6 +35,7 @@ class PullRecyclerView : RefreshLayout {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PullRecyclerView)
         itemLayoutId = typedArray.getResourceId(R.styleable.PullRecyclerView_item, R.layout.item_default)
         val dividerDrawable = typedArray.getDrawable(R.styleable.PullRecyclerView_itemDivider)
+        enableEmpty = typedArray.getBoolean(R.styleable.PullRecyclerView_enableEmpty, true)
         typedArray.recycle()
         mRecyclerView = createRecyclerView(context, attrs)
         //设置RecyclerView全屏显示
@@ -70,15 +72,22 @@ class PullRecyclerView : RefreshLayout {
     }
 
     fun <T> setAdapter(data: List<T>, bindView: View.(T) -> Unit): RecyclerAdapter<T> {
+        showEmpty(enableEmpty && data.isEmpty())
         return RecyclerAdapter(data, itemLayoutId, bindView).apply { mRecyclerView.adapter = this }
     }
 
     fun <T> setAdapter(data: List<T>, layoutId: Int, bindView: View.(T) -> Unit): RecyclerAdapter<T> {
+        showEmpty(enableEmpty && data.isEmpty())
         return RecyclerAdapter(data, layoutId, bindView).apply { mRecyclerView.adapter = this }
     }
 
     fun notifyDataSetChanged() {
+        showEmpty(enableEmpty && mRecyclerView.adapter?.itemCount == 0)
         mRecyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    fun enableEmpty(enable: Boolean) {
+        this.enableEmpty = enable
     }
 
     /**

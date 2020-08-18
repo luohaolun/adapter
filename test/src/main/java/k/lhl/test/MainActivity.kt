@@ -1,46 +1,47 @@
 package k.lhl.test
 
 import android.os.Bundle
+import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import k.lhl.adapter.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_test.view.*
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
-
+    val data = mutableListOf<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val data = mutableListOf<String>()
-        for (i in 10..30) {
+        for (i in 10..13) {
             data.add(i.toString())
         }
 
 //        recyList.setHeader(MyHeaderView::class.java)
-//        recyList.adapter = RecyclerAdapter(data, R.layout.item_test)
-        recyList.setAdapter(data)
+//        recyclerList.adapter = RecyclerAdapter(data, R.layout.item_test)
+        recyclerList.setAdapter(data)
         {
             tvNum.text = it
             btn.setOnClickListener { Toast.makeText(this@MainActivity, "点击" + position, Toast.LENGTH_SHORT).show() }
         }.setOnItemClickListener(500) {
+            data.removeAt(position)
+            recyclerList.notifyDataSetChanged()
             Toast.makeText(this@MainActivity, "点击    $position    $it", Toast.LENGTH_SHORT).show()
         }.setOnItemLongClickListener {
             Toast.makeText(this@MainActivity, "长按    $position     $it", Toast.LENGTH_SHORT).show()
         }
 
-        recyList.setHeader(MyHeaderView::class.java)
 
-//        recyList.setLayoutManager(LinearLayoutManager(this).apply { orientation = LinearLayoutManager.VERTICAL })
 
-        recyList.setOnRefreshListener {
-            recyList.postDelayed({
-                recyList.onHeaderComplete()
+        recyclerList.setOnRefreshListener {
+            recyclerList.postDelayed({
+                recyclerList.onHeaderComplete()
             }, 3000)
         }.setOnLoadListener {
-            recyList.postDelayed({
-                recyList.onFooterComplete(true)
+            recyclerList.postDelayed({
+                recyclerList.onFooterComplete(true)
             }, 3000)
         }
 
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 //                refresh.onFooterComplete(true)
 //            }, 2000)
 //        }
+
 //
 //
 //        lvList.adapter = Adapter(data, R.layout.item_test) {
@@ -122,4 +124,15 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        menu?.findItem(R.id.menu_add)?.setOnMenuItemClickListener {
+            data.add(Random(5).nextInt().toString())
+            recyclerList.notifyDataSetChanged()
+            true
+        }
+        return super.onCreateOptionsMenu(menu)
+    }
+
 }
