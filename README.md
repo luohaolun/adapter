@@ -5,7 +5,7 @@
 
 超简化代码，高阶函数参数简化为1，使用非常方便。多类型注意数据源的构造 data:List<Pair<Int,T>>
 
-2.0版本合并log库： [https://github.com/luohaolun/log]()
+2.0版本合并log库： [https://github.com/luohaolun/log](https://github.com/luohaolun/log)
 
 
 ### 添加依赖
@@ -177,9 +177,11 @@
 
 ### PullRecyclerView
 
+继承自RefreshLayout，对RecyclerView的扩展
+
+
 >>使用
 
-继承自RefreshLayout，对RecyclerView的扩展
 
     <k.lhl.refresh.PullRecyclerView
         android:id="@+id/recyList"
